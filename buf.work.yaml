@@ -1,0 +1,5 @@
+version: v1
+directories:
+  - proto
+  # - vendor/github.com/googleapis/googleapis
+  # - vendor/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis

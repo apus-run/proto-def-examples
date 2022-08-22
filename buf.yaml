@@ -1,0 +1,9 @@
+version: v1
+name: buf.build/apus-run/proto-def-examples
+breaking:
+  use:
+    - FILE
+lint:
+  use:
+    - DEFAULT
+  enum_zero_value_suffix: _UNKNOWN
