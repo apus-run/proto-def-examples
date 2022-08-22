@@ -1,6 +1,6 @@
 # proto-def-examples
 
-An example service built with [Connect](https://connect.build) and Gin.
+grpc、connect、gin 等 proto 的集合
 
 ## 使用
 
