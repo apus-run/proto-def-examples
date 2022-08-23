@@ -7,7 +7,7 @@ package userv1connect
 import (
 	context "context"
 	errors "errors"
-	v1 "github.com/apus-run/proto-def-examples/user/v1"
+	v1 "github.com/apus-run/proto-def-examples/proto/user/v1"
 	connect_go "github.com/bufbuild/connect-go"
 	http "net/http"
 	strings "strings"
