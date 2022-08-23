@@ -28,6 +28,7 @@ const (
 // UserServiceClient is a client for the user.v1.UserService service.
 type UserServiceClient interface {
 	Say(context.Context, *connect_go.Request[v1.SayRequest]) (*connect_go.Response[v1.SayResponse], error)
+	Introduce(context.Context, *connect_go.Request[v1.IntroduceRequest]) (*connect_go.ServerStreamForClient[v1.IntroduceResponse], error)
 	Login(context.Context, *connect_go.Request[v1.LoginRequest]) (*connect_go.Response[v1.LoginResponse], error)
 }
 
@@ -46,6 +47,11 @@ func NewUserServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts
 			baseURL+"/user.v1.UserService/Say",
 			opts...,
 		),
+		introduce: connect_go.NewClient[v1.IntroduceRequest, v1.IntroduceResponse](
+			httpClient,
+			baseURL+"/user.v1.UserService/Introduce",
+			opts...,
+		),
 		login: connect_go.NewClient[v1.LoginRequest, v1.LoginResponse](
 			httpClient,
 			baseURL+"/user.v1.UserService/Login",
@@ -56,13 +62,19 @@ func NewUserServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts
 
 // userServiceClient implements UserServiceClient.
 type userServiceClient struct {
-	say   *connect_go.Client[v1.SayRequest, v1.SayResponse]
-	login *connect_go.Client[v1.LoginRequest, v1.LoginResponse]
+	say       *connect_go.Client[v1.SayRequest, v1.SayResponse]
+	introduce *connect_go.Client[v1.IntroduceRequest, v1.IntroduceResponse]
+	login     *connect_go.Client[v1.LoginRequest, v1.LoginResponse]
 }
 
 // Say calls user.v1.UserService.Say.
 func (c *userServiceClient) Say(ctx context.Context, req *connect_go.Request[v1.SayRequest]) (*connect_go.Response[v1.SayResponse], error) {
 	return c.say.CallUnary(ctx, req)
+}
+
+// Introduce calls user.v1.UserService.Introduce.
+func (c *userServiceClient) Introduce(ctx context.Context, req *connect_go.Request[v1.IntroduceRequest]) (*connect_go.ServerStreamForClient[v1.IntroduceResponse], error) {
+	return c.introduce.CallServerStream(ctx, req)
 }
 
 // Login calls user.v1.UserService.Login.
@@ -73,6 +85,7 @@ func (c *userServiceClient) Login(ctx context.Context, req *connect_go.Request[v
 // UserServiceHandler is an implementation of the user.v1.UserService service.
 type UserServiceHandler interface {
 	Say(context.Context, *connect_go.Request[v1.SayRequest]) (*connect_go.Response[v1.SayResponse], error)
+	Introduce(context.Context, *connect_go.Request[v1.IntroduceRequest], *connect_go.ServerStream[v1.IntroduceResponse]) error
 	Login(context.Context, *connect_go.Request[v1.LoginRequest]) (*connect_go.Response[v1.LoginResponse], error)
 }
 
@@ -88,6 +101,11 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect_go.HandlerOpt
 		svc.Say,
 		opts...,
 	))
+	mux.Handle("/user.v1.UserService/Introduce", connect_go.NewServerStreamHandler(
+		"/user.v1.UserService/Introduce",
+		svc.Introduce,
+		opts...,
+	))
 	mux.Handle("/user.v1.UserService/Login", connect_go.NewUnaryHandler(
 		"/user.v1.UserService/Login",
 		svc.Login,
@@ -101,6 +119,10 @@ type UnimplementedUserServiceHandler struct{}
 
 func (UnimplementedUserServiceHandler) Say(context.Context, *connect_go.Request[v1.SayRequest]) (*connect_go.Response[v1.SayResponse], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("user.v1.UserService.Say is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) Introduce(context.Context, *connect_go.Request[v1.IntroduceRequest], *connect_go.ServerStream[v1.IntroduceResponse]) error {
+	return connect_go.NewError(connect_go.CodeUnimplemented, errors.New("user.v1.UserService.Introduce is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) Login(context.Context, *connect_go.Request[v1.LoginRequest]) (*connect_go.Response[v1.LoginResponse], error) {

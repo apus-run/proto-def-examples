@@ -4,14 +4,23 @@ package user.v1;
 
 service UserService {
   rpc Say(SayRequest) returns (SayResponse) {}
+  rpc Introduce(IntroduceRequest) returns (stream IntroduceResponse) {}
   rpc Login(LoginRequest) returns (LoginResponse) {}
 }
 
 message SayRequest {
-  string sentence = 1;
+  string name = 1;
 }
 
 message SayResponse {
+  string sentence = 1;
+}
+
+message IntroduceRequest {
+  string name = 1;
+}
+
+message IntroduceResponse {
   string sentence = 1;
 }
 
